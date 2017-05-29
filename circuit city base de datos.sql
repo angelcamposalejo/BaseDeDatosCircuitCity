@@ -6,11 +6,14 @@ CREATE TABLE item (
     cost DOUBLE NOT NULL
 );
 CREATE TABLE ord_det (
-    order_id INT(10) AUTO_INCREMENT NOT NULL PRIMARY KEY,
+    order_det_id INT(10) AUTO_INCREMENT NOT NULL PRIMARY KEY,
+    order_id INT(10) NOT NULL,
     item_id INT(10) NOT NULL,
     item_count INT(10) NOT NULL,
     FOREIGN KEY (item_id)
-        REFERENCES item (item_id)
+        REFERENCES item (item_id),
+    FOREIGN KEY (order_id)
+        REFERENCES orderx (orderid)
 );
 create table client(
 client_id int(10) auto_increment not null primary key,
@@ -24,7 +27,7 @@ CREATE TABLE credit_client (
     FOREIGN KEY (client_id)
         REFERENCES client (client_id)
 );
-CREATE TABLE ordex (
+CREATE TABLE orderx (
     orderid INT(10) AUTO_INCREMENT NOT NULL PRIMARY KEY,
     client_id INT(10) NOT NULL,
     FOREIGN KEY (client_id)
@@ -44,9 +47,6 @@ insert into item(name,cost)values
 ('Keyboard','20.00'),
 ('Mouse','15.68'),
 ('USB drive','15.68');
-insert into ord_det(item_id,item_count)values
-(1,4),(5,5),(6,1),(7,3),(10,2),(3,5),(4,2),(11,4),(12,12),
-(8,5),(4,2),(5,2),(3,2),(13,10);
 insert into client(name,company)values
 ('Smith, Tony','Microsoft'),
 ('Smith, Julie','IBM'),
@@ -65,5 +65,50 @@ insert into credit_client(client_id,credit)values
 (5,'7000.00'),
 (6,'8000.00'),
 (9,'90.00');
-insert into ordex(client_id)values
+insert into orderx(client_id)values
 (1),(9),(6),(2),(9),(2);
+insert into ord_det(order_id,item_id,item_count)values
+(1,1,4),
+(1,5,5),
+(2,6,1),
+(2,7,3),
+(2,10,2),
+(3,3,5),
+(3,4,2),
+(3,11,4),
+(3,12,12),
+(4,8,5),
+(5,4,2),
+(5,5,2),
+(6,3,2),
+(6,13,10);
+SELECT 
+    SUM(cost), AVG(cost), MIN(cost), MAX(cost)
+FROM
+    item;
+SELECT 
+    a.order_id, b.name, b.cost, a.item_count, b.cost
+FROM
+    ord_det a,
+    item b
+WHERE
+    a.item_id = b.item_id AND a.order_id = 3;
+SELECT 
+    MAX(b.cost) AS expensive, MIN(b.cost) AS chip
+FROM
+    ord_det a,
+    item b
+WHERE
+    a.item_id = b.item_id AND a.order_id = 3;
+
+
+SELECT 
+    COUNT(*) AS order_2002
+FROM
+    ord_det
+WHERE
+    order_id = 3;
+select count(order_id)as order_c,
+count(all order_id)as ord_all,
+count(distinct order_id)as ord_dist
+from ord_det;
